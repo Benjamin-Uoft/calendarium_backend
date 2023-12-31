@@ -15,7 +15,6 @@ class SyncUserData:
     def __init__(self, user_id=None):
         self._accounts = [{'type': 'Google'}, {'type': 'Microsoft'}]
         self._events = []
-        self.sync_user_data()
 
     def sync_user_data(self):
 
@@ -28,9 +27,6 @@ class SyncUserData:
 
             # Split the events into old and new
             old_events, new_events = self.check_if_event_exists(events)
-
-            # ToDo: Delete deleted events
-            # ToDo: does event already exist
 
             # Push new events to other accounts
             self.push_events_to_other_accounts(new_events, account_details)

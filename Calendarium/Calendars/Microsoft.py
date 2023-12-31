@@ -17,6 +17,7 @@ class OutlookCalendarService(CalenderService):
     _SCOPES = ['Calendars.ReadWrite']
     _GRAPH_API_ENDPOINT = 'https://graph.microsoft.com/v1.0'
     _APP_ID = '60109714-43af-4fde-ac6c-db47725dfefd'
+    _header: dict
 
     def __init__(self, token_json):
 
@@ -47,13 +48,19 @@ class OutlookCalendarService(CalenderService):
             webbrowser.open('https://microsoft.com/devicelogin')
             token_response = client.acquire_token_by_device_flow(flow)
 
-        with open(token_json, 'w') as _f:
-            _f.write(access_token_cache.serialize())
+            # Writing to the file
+            with open(token_json, 'w') as _f:
+                _f.write(access_token_cache.serialize())
 
-        self._access_token = token_response
-        self._headers = {
-            'Authorization': 'Bearer ' + self._access_token['access_token']
-        }
+            # Print statements for debugging
+            print("Token successfully written to file.")
+            print(f"Token file path: {token_json}")
+
+            # Add this to the __init__ method of OutlookCalendarService
+            self._access_token = token_response
+            self._headers = {
+                'Authorization': 'Bearer ' + self._access_token['access_token']
+            }
 
     def read_events_from_calendar(self):
         response = requests.get(
@@ -77,6 +84,7 @@ class OutlookCalendarService(CalenderService):
         #                     "timeZone": "UTC"
         #                     }
         #                 }
+
 
         response = requests.post(
             self._GRAPH_API_ENDPOINT + f'/me/events',

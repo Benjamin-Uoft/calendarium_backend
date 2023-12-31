@@ -37,12 +37,12 @@ print('this is server', id(db))
 
 
 # def background_task():
-#     db_trans = db_transaction()
 #
-#     data_query = User.query.filter_by(username='rahbaral')
-#     user = db_trans.select_from_table_first_query(data_query)
+#     time.sleep(5)
 #
-#     print(user.first_name)
+#     with flask_app.app_context():
+#         start_sync()
+
 
 
 def run_flask():
@@ -57,8 +57,9 @@ def run_flask():
 
 
 if __name__ == '__main__':
-
     # synchronization_thread = threading.Thread(target=background_task)
     # synchronization_thread.start()
 
     run_flask()
+
+

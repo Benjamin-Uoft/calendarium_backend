@@ -8,6 +8,7 @@ from database.db import db
 from Authentication import PasswordManager
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+from database.encryption import encrypt_string, decrypt_string
 
 
 class User(db.Model):
@@ -51,7 +52,6 @@ class User(db.Model):
         Returns a boolean of whether the password is correct or not
         """
         return self.generate_password_hash(password) == self.password_hash
-
 
 
 class Subscription(db.Model):
@@ -147,5 +147,8 @@ class Account(db.Model):
         self.account_type = account_type
 
         # ToDo: Add encryption before writing to database
-        self.username = username
-        self.access_token = access_token
+        self.username = encrypt_string(username)
+        self.access_token = encrypt_string(access_token)
+
+    def get_token(self):
+        return decrypt_string(self.access_token)
