@@ -4,15 +4,12 @@ Programmer: Ali Rahbar
 Date: December 16, 2023
 Description: This file is incharge of starting up the calendarium backend server.
 """
-import time
-
-from flask import Flask
 from flask_cors import CORS
 from app import app
 from database.db import db
 
 import os
-from flask import Flask, request, g
+from flask import Flask
 
 # Set the status of the debugger
 DEBUG = True
