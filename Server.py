@@ -10,16 +10,9 @@ from flask import Flask
 from flask_cors import CORS
 from app import app
 from database.db import db
-import threading
-from Calendarium.SyncMod import start_sync
+
 import os
 from flask import Flask, request, g
-from sqlalchemy import create_engine, Column, Integer, String, Sequence
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-import threading
-from database.db_transactions import db_transaction
-from database.models import User
 
 # Set the status of the debugger
 DEBUG = True
