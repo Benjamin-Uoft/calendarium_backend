@@ -1,17 +1,27 @@
-from database import db
-from database.models import User
-from Calendarium.Events.Event import Event
+from database.db_transactions import db_transaction
+from database.models import User, Account, Event
+from Calendarium.Calendars.Events.Event import TempEvent
 from Calendarium.account import Account
+
+
+db_trans = db_transaction()
 
 
 class SyncUserData:
     _user: User
-    _accounts: list
+    _accounts: list[Account]
     _events: list[Event]
 
-    def __init__(self, user_id=None):
-        self._accounts = [{'type': 'Google'}, {'type': 'Microsoft'}]
-        self._events = []
+    def __init__(self, user_id):
+        self._user = User.query.get(user_id=user_id).first()
+
+        # Collect the accounts the user has
+        data_query = Account.query.filter(user_id=user_id)
+        self._accounts = db_trans.select_from_table_all_query(data_query)
+
+        # Collect All the events from the database
+        data_query = Event.query.filter(user_id=user_id)
+        self._events = db_trans.select_from_table_all_query(data_query)
 
     def sync_user_data(self):
 

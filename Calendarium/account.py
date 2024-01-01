@@ -2,7 +2,7 @@ from Calendarium.Calendars.Base.CalendarAccount import CalenderService
 from Calendarium.Calendars.Google import GoogleCalendarService
 from Calendarium.Calendars.Microsoft import OutlookCalendarService
 
-from Calendarium.Events.Event import Event
+from Calendarium.Calendars.Events.Event import TempEvent
 
 from datetime import datetime
 class Account:

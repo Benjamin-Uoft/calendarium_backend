@@ -9,7 +9,7 @@ from Authentication import PasswordManager
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from database.encryption import encrypt_string, decrypt_string
-
+from sqlalchemy.ext.mutable import MutableDict
 
 class User(db.Model):
     """Programmer: Ali Rahbar
@@ -152,3 +152,21 @@ class Account(db.Model):
 
     def get_token(self):
         return decrypt_string(self.access_token)
+
+
+class Event(db.Model):
+    """Programmer: Ali Rahbar
+    Date: January 1, 2024
+    Model for events
+    """
+
+    __tablename__ = 'events'
+
+    event_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users'))
+
+    calendar_ids = db.Column(db.JSON)
+    event_subject = db.Column(db.String)
+    event_location = db.Column(db.String)
+    event_start_time = db.Column(db.DateTime)
+    event_end_time = db.Column(db.DateTime)
