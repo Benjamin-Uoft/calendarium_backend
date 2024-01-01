@@ -1,9 +1,6 @@
 from database import db
 from database.models import User
-from Calendarium.Calendars.Google import GoogleCalendarService
 from Calendarium.Events.Event import Event
-from database.db_transactions import db_transaction
-from Calendarium.Calendars.Microsoft import OutlookCalendarService
 from Calendarium.account import Account
 
 
@@ -58,6 +55,9 @@ class SyncUserData:
                 new_event.event_ids[account_details['type']] = account.add_event_to_calendar(new_event)
 
         self._events.extend(new_events)
+
+    def get_user_id(self):
+        return self._user.user_id
 
 
 

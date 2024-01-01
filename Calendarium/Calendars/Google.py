@@ -1,10 +1,4 @@
-# Example using Python with the google-api-python-client library
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-from google.auth.transport.requests import Request
 from Calendarium.Calendars.Base.CalendarAccount import CalenderService
-import datetime
 import os.path
 
 from google.auth.transport.requests import Request

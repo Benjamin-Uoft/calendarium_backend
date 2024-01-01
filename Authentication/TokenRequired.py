@@ -2,7 +2,6 @@ from flask import request
 from functools import wraps
 import jwt
 from Server import flask_app
-from app import app
 
 
 # Token required decorator

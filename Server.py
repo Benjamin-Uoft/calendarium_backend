@@ -10,6 +10,10 @@ from database.db import db
 
 import os
 from flask import Flask
+import time
+
+from Calendarium.SyncMod import SyncMod
+import threading
 
 # Set the status of the debugger
 DEBUG = True
@@ -26,13 +30,12 @@ CORS(flask_app)
 print('this is server', id(db))
 
 
-# def background_task():
-#
-#     time.sleep(5)
-#
-#     with flask_app.app_context():
-#         start_sync()
+def background_task():
 
+    time.sleep(5)
+
+    with flask_app.app_context():
+        SyncMod()
 
 
 def run_flask():
@@ -43,12 +46,13 @@ def run_flask():
 
     # Start the flaks app
     flask_app.register_blueprint(app.api_bp, url_prefix='/api')
-    flask_app.run(host='0.0.0.0', port=PORT, debug=True)
+    flask_app.run(host='0.0.0.0', port=PORT, debug=DEBUG)
 
 
 if __name__ == '__main__':
-    # synchronization_thread = threading.Thread(target=background_task)
-    # synchronization_thread.start()
+
+    synchronization_thread = threading.Thread(target=background_task)
+    synchronization_thread.start()
 
     run_flask()
 
