@@ -20,8 +20,10 @@ class SyncMod:
     _sync_user_objects: dict[str, SyncUserData]
 
     def __init__(self):
+        print("Initializing SyncMod class...")
         self._sync_user_objects = {}
         self.check_subscription()
+        print(self._sync_user_objects)
         self.sync_calendars()
 
     def check_subscription(self):
@@ -31,9 +33,10 @@ class SyncMod:
         Checks through the subscriptions and deletes the invalid ones
         """
         # Loop through all the subscriptions
-        for subscription in Subscription.query.all():
+        for subscription in Subscription.query.all():  # ToDo: Error
+            print(subscription.user_id)
             # Collect the date
-            till_date_valid = datetime.strptime(subscription.date_valid, "%Y-%m-%d")
+            till_date_valid = subscription.date_valid
 
             # if date has passed and is expired
             if till_date_valid < datetime.now():
