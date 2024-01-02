@@ -1,37 +1,39 @@
 import requests
 
 from Calendarium.Calendars.Base.CalendarAccount import CalenderService
-
+from Calendarium.Events.Event import Event
 import webbrowser
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import os
 import msal
-
+from database.models import Account
 
 class OutlookCalendarService(CalenderService):
     """
     Microsoft Outlook Calendar Service
     """
 
-    _SCOPES = ['Calendars.ReadWrite']
+    _SCOPES = ['Calendars.ReadWrite', 'Calendars.ReadBasic']
     _GRAPH_API_ENDPOINT = 'https://graph.microsoft.com/v1.0'
     _APP_ID = '60109714-43af-4fde-ac6c-db47725dfefd'
-    _header: dict
+    _headers: dict
+    _account: Account
 
-    def __init__(self, token_json):
+    def __init__(self, account: Account):
+        self._account = account
 
         # Save Session Token as a token file
         access_token_cache = msal.SerializableTokenCache()
 
         # read the token file
-        if os.path.exists(token_json):
-            access_token_cache.deserialize(open(token_json, "r").read())
-            token_detail = json.load(open(token_json, ))
+        if os.path.exists('ms_graph_api_token.json'):
+            access_token_cache.deserialize(open('ms_graph_api_token.json', "r").read())
+            token_detail = json.load(open('ms_graph_api_token.json', ))
             token_detail_key = list(token_detail['AccessToken'].keys())[0]
             token_expiration = datetime.fromtimestamp(int(token_detail['AccessToken'][token_detail_key]['expires_on']))
             if datetime.now() > token_expiration:
-                os.remove(token_json)
+                os.remove('ms_graph_api_token.json')
                 access_token_cache = msal.SerializableTokenCache()
 
         # assign a SerializableTokenCache object to the client instance
@@ -49,16 +51,16 @@ class OutlookCalendarService(CalenderService):
             token_response = client.acquire_token_by_device_flow(flow)
 
             # Writing to the file
-            with open(token_json, 'w') as _f:
+            with open('ms_graph_api_token.json', 'w') as _f:
                 _f.write(access_token_cache.serialize())
 
             # Print statements for debugging
             print("Token successfully written to file.")
-            print(f"Token file path: {token_json}")
+            print(f"Token file path: {'ms_graph_api_token.json'}")
 
-            # Add this to the __init__ method of OutlookCalendarService
-            self._access_token = token_response
-            self._headers = {
+        # Add this to the __init__ method of OutlookCalendarService
+        self._access_token = token_response
+        self._headers = {
                 'Authorization': 'Bearer ' + self._access_token['access_token']
             }
 
@@ -68,30 +70,40 @@ class OutlookCalendarService(CalenderService):
             headers=self._headers
         )
 
-        events = response.json().get('value', [])
+        results = []
 
-        return events
+        for event in response.json().get('value', []):
+
+            results.append(Event(subject=event['subject'],
+                                 location=event['location'],
+                                 start_time=datetime.fromisoformat(event['start']['dateTime']),
+                                 end_time=datetime.fromisoformat(event['end']['dateTime']),
+                                 calendar_ids={self._account.account_id, event['id']}
+                                 ))
+
+        return results
 
     def add_event_to_calendar(self, event):
-        # request_body = {
-        #                 "subject": "Benjamin's Birthday",
-        #                 "start": {
-        #                     "dateTime": "2023-12-30T17:00:00",
-        #                     "timeZone": "UTC"
-        #                     },
-        #                 "end": {
-        #                     "dateTime": "2023-12-30T19:00:00",
-        #                     "timeZone": "UTC"
-        #                     }
-        #                 }
-
+        request_body = {
+                        "subject": event.subject,
+                        'location': event.location,
+                        'start': {
+                            'dateTime': event.start_time.isoformat(),
+                            'timeZone': 'UTC',
+                            },
+                        'end': {
+                            'dateTime': event.end_time.isoformat(),
+                            'timeZone': 'UTC',
+                            },
+                        }
 
         response = requests.post(
             self._GRAPH_API_ENDPOINT + f'/me/events',
             headers=self._headers,
-            json=event
+            json=request_body
         )
 
+        print(response.json())
         return response
 
     def delete_event_from_calendar(self, event_id):
@@ -108,4 +120,9 @@ class OutlookCalendarService(CalenderService):
             print(f"Event with ID {event_id} deleted successfully.")
         else:
             print(f"Error deleting event: {response.status_code}, {response.text}")
+
+if __name__ == '__main__':
+    calendar = OutlookCalendarService(Account())
+
+    calendar.read_events_from_calendar()
 

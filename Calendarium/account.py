@@ -2,8 +2,6 @@ from Calendarium.Calendars.Base.CalendarAccount import CalenderService
 from Calendarium.Calendars.Google import GoogleCalendarService
 from Calendarium.Calendars.Microsoft import OutlookCalendarService
 
-from Calendarium.Calendars.Events.Event import TempEvent
-
 from datetime import datetime
 class Account:
     _account: dict

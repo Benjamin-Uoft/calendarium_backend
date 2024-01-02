@@ -138,7 +138,7 @@ class Account(db.Model):
     username = db.Column(db.String)
     access_token = db.Column(db.String)
 
-    def __init__(self, user_id=None, account_type=None, username=None, access_token=None):
+    def __init__(self, user_id=None, account_type='Google', username='', access_token=''):
         # Check if account type is supported
         if account_type not in ['iCloud', 'Google', 'Outlook']:
             raise ValueError('Input value type is not supported (Model: Account)')
@@ -166,7 +166,18 @@ class Event(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users'))
 
     calendar_ids = db.Column(db.JSON)
-    event_subject = db.Column(db.String)
-    event_location = db.Column(db.String)
-    event_start_time = db.Column(db.DateTime)
-    event_end_time = db.Column(db.DateTime)
+
+    subject = db.Column(db.String)
+    location = db.Column(db.String)
+    description = db.Column(db.String)
+    start_time = db.Column(db.DateTime)
+    end_time = db.Column(db.DateTime)
+
+    def __init__(self, user_id=None, calendar_ids=None, subject=None, location=None, description=None, start_time=None, end_time=None):
+        self.user_id = user_id
+        self.calendar_ids = calendar_ids
+        self.subject = subject
+        self.location = location
+        self.description = description
+        self.start_time = start_time
+        self.end_time = end_time

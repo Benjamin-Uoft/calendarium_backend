@@ -1,7 +1,8 @@
 from database.db_transactions import db_transaction
-from database.models import User, Account, Event
-from Calendarium.Calendars.Events.Event import TempEvent
+from database.models import User, Account
 from Calendarium.account import Account
+
+from Calendarium.Events.Event import Event
 
 
 db_trans = db_transaction()
@@ -10,7 +11,7 @@ db_trans = db_transaction()
 class SyncUserData:
     _user: User
     _accounts: list[Account]
-    _events: list[Event]
+    _tracked_events: list[Event]
 
     def __init__(self, user_id):
         self._user = User.query.get(user_id=user_id).first()
@@ -19,9 +20,7 @@ class SyncUserData:
         data_query = Account.query.filter(user_id=user_id)
         self._accounts = db_trans.select_from_table_all_query(data_query)
 
-        # Collect All the events from the database
-        data_query = Event.query.filter(user_id=user_id)
-        self._events = db_trans.select_from_table_all_query(data_query)
+        self._events = []
 
     def sync_user_data(self):
 
