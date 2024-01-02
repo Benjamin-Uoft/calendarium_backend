@@ -16,6 +16,16 @@ from Calendarium.Events.Event import Event
 
 class GoogleCalendarService(CalenderService):
     _SCOPES = ['https://www.googleapis.com/auth/calendar.events']
+    _cred = {
+        "installed": {
+            "client_id": "977363402629-4j9raj28g2qpri0cnpijgirtmc4mftcl.apps.googleusercontent.com",
+            "project_id": "calendarium-409400", "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+            "client_secret": "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",
+            "redirect_uris": ["http://localhost"]
+        }
+    }
     _account: Account
 
     def __init__(self, account):
@@ -35,7 +45,7 @@ class GoogleCalendarService(CalenderService):
                 creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    "credentials.json", self._SCOPES
+                    self._cred, self._SCOPES
                 )
                 creds = flow.run_local_server(port=0)
             # Save the credentials for the next run
